@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/external/glfw/docs/html
+/external/glfw/lib-mingw-w64
+/external/glfw/lib-static-ucrt
+/external/glfw/lib-vc2012
+/external/glfw/lib-vc2013
+/external/glfw/lib-vc2015
+/external/glfw/lib-vc2017
+/external/glfw/lib-vc2019
