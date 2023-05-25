@@ -92,18 +92,12 @@
 #define PRINT(p, ...) std::cout << std::fixed << std::setprecision(p) << __VA_ARGS__ << std::endl;
 #define PRINTNNL(p, ...) std::cout << std::fixed << std::setprecision(p) << __VA_ARGS__;
 #define GLWFERR(error, description) VKERROR("GLFW Error ({}): {}", error, description);
-#define VKSYSPAUSE                                                                                                     \
+#define VKSYSPAUSE()                                                                                                   \
     VKINFO("Press enter to exit...");                                                                                  \
     std::cin.ignore();
 #define PRINTVER(version)                                                                                              \
     VKINFO("System can support vulkan Variant: {}, Major: {}, Minor: {}", VK_API_VERSION_VARIANT(version),             \
            VK_API_VERSION_MAJOR(version), VK_API_VERSION_MINOR(version), VK_API_VERSION_PATCH(version))
-
-/*#define PRINTVER(p,version) std::cout << std::fixed << std::setprecision(p)\
-<< "System can support vulkan Variant: " << VK_API_VERSION_VARIANT(version)\
-<< ", Major: " << VK_API_VERSION_MAJOR(version)\
-<< ", Minor: " << VK_API_VERSION_MINOR(version)\
-<< ", Patch: " << VK_API_VERSION_PATCH(version) << std::endl;\*/
 
 using ddvector = std::vector<std::vector<double>>;
 namespace VKRT
