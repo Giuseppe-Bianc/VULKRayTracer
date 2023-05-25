@@ -1,0 +1,10 @@
+{
+	"files.associations": {
+		"*.sublime-syntax": "yaml-tmlanguage",
+		"*.sublime-settings": "jsonc",
+		"*.json": "json",
+		"*.shader": "shaderlab",
+		"xstring": "cpp"
+	},
+	"sonarlint.pathToCompileCommands": "${workspaceFolder}\\compile_commands.json"
+}
