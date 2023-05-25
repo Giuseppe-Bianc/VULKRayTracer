@@ -50,6 +50,9 @@ class HelloTriangleApplication
     vk::UniqueDebugUtilsMessengerEXT debugUtilsMessenger;
 
     vk::PhysicalDevice physicalDevice;
+    vk::UniqueDevice device;
+
+    vk::Queue graphicsQueue;
     void calcolaFPS()
     {
         static double tempoPrecedente = 0.0;
@@ -116,6 +119,7 @@ class HelloTriangleApplication
         createInstance();
         setupDebugMessenger();
         pickPhysicalDevice();
+        createLogicalDevice();
     }
 
     void mainLoop()
@@ -171,6 +175,7 @@ class HelloTriangleApplication
             instance = vk::createInstanceUnique(createInfo, nullptr);
         }
 
+        // 全ての関数ポインタを取得する
         // get all the other function pointers
         VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance);
     }
@@ -203,6 +208,25 @@ class HelloTriangleApplication
         if (!physicalDevice) {
             throw std::runtime_error("failed to find a suitable GPU!");
         }
+    }
+
+    void createLogicalDevice()
+    {
+        QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+        float queuePriority = 1.0f;
+        vk::DeviceQueueCreateInfo queueCreateInfo({}, indices.graphicsFamily.value(), 1, &queuePriority);
+
+        vk::PhysicalDeviceFeatures deviceFeatures{};
+
+        vk::DeviceCreateInfo createInfo({}, queueCreateInfo, {}, {}, &deviceFeatures);
+
+        if (enableValidationLayers) {
+            createInfo.setPEnabledLayerNames(validationLayers);
+        }
+
+        device = physicalDevice.createDeviceUnique(createInfo);
+        graphicsQueue = device->getQueue(indices.graphicsFamily.value(), 0);
     }
 
     bool isDeviceSuitable(vk::PhysicalDevice device)
