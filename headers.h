@@ -30,12 +30,11 @@
 #include <spdlog/spdlog.h>
 #include <tiny_obj_loader.h>
 #include <vulkan/vulkan.h>
-#include <atomic>
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cmath>
-#include <numbers>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -51,6 +50,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <numbers>
 #include <optional>
 #include <random>
 #include <set>
@@ -67,10 +67,10 @@
 #pragma warning(pop)
 #endif
 
-[[nodiscard]] static constexpr auto calcolaCentro(const unsigned int width, const unsigned int w) noexcept {
+[[nodiscard]] static constexpr auto calcolaCentro(const unsigned int width, const unsigned int w) noexcept
+{
     return (width - w) / 2;
 }
-
 
 #define VKTRACE(...) SPDLOG_TRACE(__VA_ARGS__)
 #define VKDEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
@@ -88,10 +88,13 @@
 #define CAST_ULLI(x) static_cast<long long int>((x))
 #define CAST_D(x) static_cast<double>((x))
 #define CAST_F(x) static_cast<float>((x))
-#define CALC_CENTRO(width, w) calcolaCentro((width),(w))
+#define CALC_CENTRO(width, w) calcolaCentro((width), (w))
 #define PRINT(p, ...) std::cout << std::fixed << std::setprecision(p) << __VA_ARGS__ << std::endl;
 #define PRINTNNL(p, ...) std::cout << std::fixed << std::setprecision(p) << __VA_ARGS__;
 #define GLWFERR(error, description) VKERROR("GLFW Error ({}): {}", error, description);
+#define VKSYSPAUSE                                                                                                     \
+    VKINFO("Press enter to exit...");                                                                                  \
+    std::cin.ignore();
 #define PRINTVER(version)                                                                                              \
     VKINFO("System can support vulkan Variant: {}, Major: {}, Minor: {}", VK_API_VERSION_VARIANT(version),             \
            VK_API_VERSION_MAJOR(version), VK_API_VERSION_MINOR(version), VK_API_VERSION_PATCH(version))

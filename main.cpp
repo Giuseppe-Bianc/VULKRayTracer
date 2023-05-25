@@ -74,7 +74,8 @@ int main()
         glfwTerminate();
         throw GLFWError("Failed to set window position centered");
     }
-    VKINFO("creata finestra glfw {}:(lagezza: {}, altezza: {}, posizione(x:{},y:{}))", VKRT::windowTitle.data(), VKRT::w, VKRT::h, centerX, centerY);
+    VKINFO("creata finestra glfw {}:(lagezza: {}, altezza: {}, posizione(x:{},y:{}))", VKRT::windowTitle.data(),
+           VKRT::w, VKRT::h, centerX, centerY);
     glfwShowWindow(window);
     auto startTime = std::chrono::high_resolution_clock::now();
     auto previousTime = startTime;
@@ -90,7 +91,6 @@ int main()
     // Pulizia delle risorse
     glfwDestroyWindow(window);
     glfwTerminate();
-    VKINFO("Press enter to exit...");
-    std::cin.ignore();
+    VKSYSPAUSE;
     return 0;
 }
