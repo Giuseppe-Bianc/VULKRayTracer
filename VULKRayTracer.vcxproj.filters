@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="istance.h">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers.h">
@@ -32,6 +35,11 @@
     <None Include=".gitignore" />
     <None Include="README.md" />
     <None Include=".clang-format" />
+    <None Include="PULL_REQUEST_TEMPLATE.md" />
+    <None Include="SECURITY.md" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="compile_commands.json" />
+    <None Include="CODE_OF_CONDUCT.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LICENSE.txt" />

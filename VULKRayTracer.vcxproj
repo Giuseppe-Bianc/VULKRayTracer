@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="istance.h" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,7 +164,12 @@
     <None Include=".clang-format" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <None Include="CODE_OF_CONDUCT.md" />
+    <None Include="compile_commands.json" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="PULL_REQUEST_TEMPLATE.md" />
     <None Include="README.md" />
+    <None Include="SECURITY.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LICENSE.txt" />
