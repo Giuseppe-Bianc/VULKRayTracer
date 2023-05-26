@@ -22,8 +22,15 @@ const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
 
-    bool isComplete() { return graphicsFamily.has_value(); }
+    bool isComplete() { return graphicsFamily.has_value() && presentFamily.has_value(); }
+};
+
+struct SwapChainSupportDetails {
+    vk::SurfaceCapabilitiesKHR capabilities;
+    std::vector<vk::SurfaceFormatKHR> formats;
+    std::vector<vk::PresentModeKHR> presentModes;
 };
 
 #ifdef NDEBUG
@@ -48,11 +55,13 @@ class HelloTriangleApplication
 
     vk::UniqueInstance instance;
     vk::UniqueDebugUtilsMessengerEXT debugUtilsMessenger;
+    vk::UniqueSurfaceKHR surface;
 
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice device;
 
     vk::Queue graphicsQueue;
+    vk::Queue presentQueue;
     void calcolaFPS()
     {
         static double tempoPrecedente = 0.0;
@@ -118,6 +127,7 @@ class HelloTriangleApplication
     {
         createInstance();
         setupDebugMessenger();
+        createSurface();
         pickPhysicalDevice();
         createLogicalDevice();
     }
@@ -194,6 +204,17 @@ class HelloTriangleApplication
             vk::DebugUtilsMessengerCreateInfoEXT({}, severityFlags, messageTypeFlags, &debugUtilsMessengerCallback));
     }
 
+    void createSurface()
+    {
+        // glfw は生の VkSurface や VkInstance で操作する必要がある
+        VkSurfaceKHR _surface;
+        if (glfwCreateWindowSurface(VkInstance(instance.get()), window, nullptr, &_surface) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create window surface!");
+        }
+        vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> _deleter(instance.get());
+        surface = vk::UniqueSurfaceKHR(vk::SurfaceKHR(_surface), _deleter);
+    }
+
     void pickPhysicalDevice()
     {
         std::vector<vk::PhysicalDevice> devices = instance->enumeratePhysicalDevices();
@@ -214,12 +235,18 @@ class HelloTriangleApplication
     {
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
+        std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+        std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+
         float queuePriority = 1.0f;
-        vk::DeviceQueueCreateInfo queueCreateInfo({}, indices.graphicsFamily.value(), 1, &queuePriority);
+        for (uint32_t queueFamily : uniqueQueueFamilies) {
+            vk::DeviceQueueCreateInfo queueCreateInfo({}, queueFamily, 1, &queuePriority);
+            queueCreateInfos.emplace_back(queueCreateInfo);
+        }
 
         vk::PhysicalDeviceFeatures deviceFeatures{};
 
-        vk::DeviceCreateInfo createInfo({}, queueCreateInfo, {}, {}, &deviceFeatures);
+        vk::DeviceCreateInfo createInfo({}, queueCreateInfos, {}, {}, &deviceFeatures);
 
         if (enableValidationLayers) {
             createInfo.setPEnabledLayerNames(validationLayers);
@@ -227,6 +254,7 @@ class HelloTriangleApplication
 
         device = physicalDevice.createDeviceUnique(createInfo);
         graphicsQueue = device->getQueue(indices.graphicsFamily.value(), 0);
+        presentQueue = device->getQueue(indices.presentFamily.value(), 0);
     }
 
     bool isDeviceSuitable(vk::PhysicalDevice device)
@@ -242,10 +270,15 @@ class HelloTriangleApplication
 
         std::vector<vk::QueueFamilyProperties> queueFamilies = device.getQueueFamilyProperties();
 
-        int i = 0;
+        uint32_t i = 0;
         for (const auto &queueFamily : queueFamilies) {
             if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics) {
                 indices.graphicsFamily = i;
+            }
+
+            VkBool32 presentSupport = device.getSurfaceSupportKHR(i, surface.get());
+            if (presentSupport) {
+                indices.presentFamily = i;
             }
 
             if (indices.isComplete()) {
@@ -267,7 +300,7 @@ class HelloTriangleApplication
         std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
         if (enableValidationLayers) {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
 
         return extensions;
