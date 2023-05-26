@@ -73,18 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExternalIncludePath>$(Solutiondir)external\spdlog\include;$(SolutionDir)external\stb;$(SolutionDir)external\imgui;$(SolutionDir)external\tinyobjloader;$(SolutionDir)external\glfw\include;$(VULKAN_SDK)\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutioDir)external\glfw\lib-vc2022;$(VULKAN_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExternalIncludePath>$(Solutiondir)external\spdlog\include;$(SolutionDir)external\stb;$(SolutionDir)external\imgui;$(SolutionDir)external\tinyobjloader;$(SolutionDir)external\glfw\include;$(VULKAN_SDK)\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutioDir)external\glfw\lib-vc2022;$(VULKAN_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExternalIncludePath>$(Solutiondir)external\spdlog\include;$(SolutionDir)external\stb;$(SolutionDir)external\imgui;$(SolutionDir)external\tinyobjloader;$(SolutionDir)external\glfw\include;$(VULKAN_SDK)\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutioDir)external\glfw\lib-vc2022;$(VULKAN_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExternalIncludePath>$(Solutiondir)external\spdlog\include;$(SolutionDir)external\stb;$(SolutionDir)external\imgui;$(SolutionDir)external\tinyobjloader;$(SolutionDir)external\glfw\include;$(VULKAN_SDK)\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutioDir)external\glfw\lib-vc2022;$(VULKAN_SDK)\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,6 +103,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Outputs>$(SulutionDir)shaders;%(Outputs)</Outputs>
+      <Command>$(SulutionDir)compile.bat</Command>
+      <Message>Pulizzia e compilazione degli shaders</Message>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <RootFolder>$(SulutionDir)shaders</RootFolder>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -118,6 +129,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>$(SulutionDir)compile.bat</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Pulizzia e compilazione degli shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(SulutionDir)shaders;%(Outputs)</Outputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <RootFolder>$(SulutionDir)shaders</RootFolder>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -132,6 +154,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Outputs>$(SulutionDir)shaders;%(Outputs)</Outputs>
+      <Command>$(SulutionDir)compile.bat</Command>
+      <Message>Pulizzia e compilazione degli shaders</Message>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <RootFolder>$(SulutionDir)shaders</RootFolder>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -151,6 +180,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>$(SulutionDir)compile.bat</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Pulizzia e compilazione degli shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(SulutionDir)shaders;%(Outputs)</Outputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <RootFolder>$(SulutionDir)shaders</RootFolder>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

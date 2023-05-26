@@ -140,6 +140,7 @@ class HelloTriangleApplication
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createGraphicsPipeline();
     }
 
     void mainLoop()
@@ -162,7 +163,6 @@ class HelloTriangleApplication
 
     void createInstance()
     {
-        // インスタンスに依存しない関数ポインタを取得する
         // get the instance independent function pointers
         static vk::DynamicLoader dl;
         auto vkGetInstanceProcAddr = dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
@@ -217,13 +217,11 @@ class HelloTriangleApplication
 
     void createSurface()
     {
-        // glfw は生の VkSurface や VkInstance で操作する必要がある
         VkSurfaceKHR _surface;
         if (glfwCreateWindowSurface(instance.get(), window, nullptr, &_surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
         }
-        vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> _deleter(instance.get());
-        surface = vk::UniqueSurfaceKHR(vk::SurfaceKHR(_surface), _deleter);
+        surface = vk::UniqueSurfaceKHR(_surface, {instance.get()});
     }
 
     void pickPhysicalDevice()
@@ -291,9 +289,9 @@ class HelloTriangleApplication
 
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
         if (indices.graphicsFamily != indices.presentFamily) {
-            std::vector<uint32_t> queueFamilyIndices = {indices.graphicsFamily.value(), indices.presentFamily.value()};
             createInfo.setImageSharingMode(vk::SharingMode::eConcurrent);
-            createInfo.setQueueFamilyIndices(queueFamilyIndices);
+            std::array familyIndices = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+            createInfo.setQueueFamilyIndices(familyIndices);
         }
 
         swapChain = device->createSwapchainKHRUnique(createInfo);
@@ -314,6 +312,31 @@ class HelloTriangleApplication
                                                components, subresourceRange);
             swapChainImageViews[i] = device->createImageViewUnique(createInfo);
         }
+    }
+
+    void createGraphicsPipeline()
+    {
+        auto vertShaderCode = readFile("shaders/vert.spv");
+        auto fragShaderCode = readFile("shaders/frag.spv");
+
+        vk::UniqueShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+        vk::UniqueShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+        vk::PipelineShaderStageCreateInfo vertShaderStageInfo({}, vk::ShaderStageFlagBits::eVertex,
+                                                              vertShaderModule.get(), "main");
+        vk::PipelineShaderStageCreateInfo fragShaderStageInfo({}, vk::ShaderStageFlagBits::eVertex,
+                                                              fragShaderModule.get(), "main");
+
+        std::array shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
+    }
+
+    vk::UniqueShaderModule createShaderModule(const std::vector<char> &code)
+    {
+        vk::ShaderModuleCreateInfo createInfo({}, code.size(), reinterpret_cast<const uint32_t *>(code.data()));
+
+        vk::UniqueShaderModule shaderModule = device->createShaderModuleUnique(createInfo);
+
+        return shaderModule;
     }
 
     vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> &availableFormats)
@@ -349,7 +372,6 @@ class HelloTriangleApplication
 
             vk::Extent2D actualExtent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 
-            // std::clamp()を使って分かりやすくしている
             actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
                                             capabilities.maxImageExtent.width);
             actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height,
@@ -456,6 +478,25 @@ class HelloTriangleApplication
             }
         }
         return true;
+    }
+
+    static std::vector<char> readFile(const std::string &filename)
+    {
+        std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+        if (!file.is_open()) {
+            throw std::runtime_error("failed to open file!");
+        }
+
+        size_t fileSize = file.tellg();
+        std::vector<char> buffer(fileSize);
+
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+
+        file.close();
+
+        return buffer;
     }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(
