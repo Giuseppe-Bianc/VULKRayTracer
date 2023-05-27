@@ -41,6 +41,8 @@ class HelloTriangleApplication
 
    private:
     GLFWwindow *window;
+
+    vk::UniqueInstance instance;
     void calcolaFPS()
     {
         static double tempoPrecedente = 0.0;
@@ -102,7 +104,7 @@ class HelloTriangleApplication
         glfwShowWindow(window);
     }
 
-    void initVulkan() {}
+    void initVulkan() { createInstance(); }
 
     void mainLoop()
     {
@@ -120,6 +122,32 @@ class HelloTriangleApplication
         glfwDestroyWindow(window);
 
         glfwTerminate();
+    }
+    void createInstance()
+    {
+        auto appInfo = vk::ApplicationInfo(VKRT::windowTitle.data(), VK_MAKE_VERSION(1, 0, 0), "No Engine",
+                                           VK_MAKE_VERSION(1, 0, 0), VK_API_VERSION_1_3);
+
+        uint32_t glfwExtensionCount = 0;
+        const char **glfwExtensions;
+
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+        auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, 0, nullptr,  // enabled layers
+                                                 glfwExtensionCount, glfwExtensions                // enabled extensions
+        );
+
+        try {
+            instance = vk::createInstanceUnique(createInfo, nullptr);
+        } catch (vk::SystemError err) {
+            throw TriangleApplicationError("failed to create instance!");
+        }
+
+        VKINFO("available extensions:");
+
+        for (const auto &extension : vk::enumerateInstanceExtensionProperties()) {
+            VKINFO("\t{}", extension.extensionName);
+        }
     }
 };
 
